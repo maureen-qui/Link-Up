@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body {
+            background-color: #3498DB;
+            color: white;
+            font-family: 'Lato', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #333;
+            padding: 10px 20px;
+            text-align: center;
+            height: 70px;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 20px;
+        }
+        nav {
+            margin-top: 10px;
+        }
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+        }
+        nav ul li {
+            margin: 0 10px;
+        }
+        nav ul li a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            background-color: #444;
+            border-radius: 4px;
+        }
+        nav ul li a:hover {
+            background-color: #555;
+        }
+        main {
+            padding: 20px;
+            text-align: center;
+        }
+        section {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #333;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        p {
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        #referralLink {
+            display: inline-block;
+            background-color: #444;
+            color: orange;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px 20px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Welcome to the Dashboard</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="login.html">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section id="dashboardSection">
+            <h2>Your Dashboard</h2>
+            <p>Welcome! You are logged in.</p>
+            <p>Your referral link: <span id="referralLink">Loading...</span></p>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2024 Networking Referrals App. All rights reserved.</p>
+    </footer>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", async function() {
+            // Firebase Configuration
+            var firebaseConfig = {
+                apiKey: "AIzaSyBeO8YWDCrp0BDtMwuDZkSeIsHHhvibVao",
+                authDomain: "linkearnings-c3889.firebaseapp.com",
+                projectId: "linkearnings-c3889",
+                storageBucket: "linkearnings-c3889.appspot.com",
+                messagingSenderId: "869537146462",
+                appId: "1:869537146462:web:fb8242d918fe1764ebf6cf"
+            };
+
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+            }
+
+            const auth = firebase.auth();
+            const db = firebase.firestore();
+
+            auth.onAuthStateChanged(async (user) => {
+                if (user) {
+                    try {
+                        const userRef = db.collection('users').doc(user.uid);
+                        const doc = await userRef.get();
+
+                        if (doc.exists) {
+                            let referralLink = doc.data().referralLink;
+
+                            if (!referralLink) {
+                                // Generate a unique referral link
+                                referralLink = `${window.location.origin}/referral/${user.uid}`;
+                                await userRef.update({ referralLink });
+                            }
+
+                            document.getElementById('referralLink').textContent = referralLink;
+                        } else {
+                            console.log('No such document!');
+                            alert('User data not found. Please try again later.');
+                        }
+                    } catch (error) {
+                        console.error('Error fetching user document:', error);
+                        alert('Error fetching user data. Please try again later.');
+                    }
+                } else {
+                    console.log('User is not logged in.');
+                    window.location.href = 'login.html';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

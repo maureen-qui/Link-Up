@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Networking Referrals App - Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #3498DB;
+            color: white;
+            font-family: 'Lato', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #333;
+            padding: 10px 20px;
+            text-align: center;
+            height: 70px;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 20px;
+        }
+        nav {
+            margin-top: 10px;
+        }
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+        }
+        nav ul li {
+            margin: 0 10px;
+        }
+        nav ul li a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            background-color: #444;
+            border-radius: 4px;
+        }
+        nav ul li a:hover {
+            background-color: #555;
+        }
+        main {
+            padding: 20px;
+            text-align: center;
+        }
+        form {
+            max-width: 400px;
+            margin: 20px auto;
+            font-size: 14px;
+        }
+        label, input, textarea {
+            display: block;
+            margin-bottom: 10px;
+        }
+        input[type="email"], input[type="password"], textarea {
+            width: calc(100% - 20px);
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: orange;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button:hover {
+            background-color: #FF5733;
+        }
+        .toggle-link {
+            color: #FFD700;
+            cursor: pointer;
+            text-decoration: underline;
+            font-size: 14px;
+        }
+        .toggle-link:hover {
+            color: #FFA500;
+        }
+    </style>
+    <script defer src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Login to Networking Referrals App</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section id="loginSection">
+            <h2>Login</h2>
+            <form onsubmit="validateLoginForm(event)">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required><br>
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required><br>
+                <button type="submit">Login</button>
+            </form>
+            <p>Not registered yet? <a href="index.html" class="toggle-link">Sign up here</a></p>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2024 Networking Referrals App. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Firebase Configuration
+            var firebaseConfig = {
+                apiKey: "AIzaSyBeO8YWDCrp0BDtMwuDZkSeIsHHhvibVao",
+                authDomain: "linkearnings-c3889.firebaseapp.com",
+                projectId: "linkearnings-c3889",
+                storageBucket: "linkearnings-c3889.appspot.com",
+                messagingSenderId: "869537146462",
+                appId: "1:869537146462:web:fb8242d918fe1764ebf6cf"
+            };
+
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+            }
+
+            const auth = firebase.auth();
+
+            // Validate and handle the login form submission
+            window.validateLoginForm = async function(event) {
+                event.preventDefault();
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+
+                if (email.trim() === '' || password.trim() === '') {
+                    alert('Please fill in all fields.');
+                    return;
+                }
+
+                try {
+                    await auth.signInWithEmailAndPassword(email, password);
+                    alert('Login successful.');
+                    // Redirect to the dashboard page after successful login
+                    window.location.href = 'dashboard.html';
+                } catch (error) {
+                    if (error.code === 'auth/user-not-found') {
+                        alert('No user found with this email.');
+                    } else if (error.code === 'auth/wrong-password') {
+                        alert('Incorrect password.');
+                    } else {
+                        alert(`Error: ${error.message}`);
+                    }
+                }
+            };
+        });
+    </script>
+</body>
+</html>
